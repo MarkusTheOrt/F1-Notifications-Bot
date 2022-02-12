@@ -1,16 +1,15 @@
 import Client from "./utils/Client";
-import Commands from "./utils/Commands";
-import DataStore from "./utils/DataStore";
+import Database from "./utils/Database";
+import Watcher from "./utils/Watcher";
 
 Client.on("ready", () => {
   console.log("Bot is connected as " + Client.user!.tag);
 });
 
+[Watcher];
 (async () => {
-  Commands.Register();
-  await Client.login(
-    "OTQyMTIxOTUwNzc4NjM0MjQw.Ygf5cA.XbyFcWKzu_RmilAYZYmS8YfZVzs"
-  );
+  await Database.Connect();
+  await Client.login(process.env.TOKEN || "");
   Client.user?.setPresence({
     status: "dnd",
     activities: [

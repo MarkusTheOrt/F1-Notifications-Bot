@@ -13,14 +13,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Client_1 = __importDefault(require("./utils/Client"));
-const Commands_1 = __importDefault(require("./utils/Commands"));
+const Database_1 = __importDefault(require("./utils/Database"));
+const Watcher_1 = __importDefault(require("./utils/Watcher"));
 Client_1.default.on("ready", () => {
     console.log("Bot is connected as " + Client_1.default.user.tag);
 });
+[Watcher_1.default];
 (() => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    Commands_1.default.Register();
-    yield Client_1.default.login("OTQyMTIxOTUwNzc4NjM0MjQw.Ygf5cA.XbyFcWKzu_RmilAYZYmS8YfZVzs");
+    yield Database_1.default.Connect();
+    yield Client_1.default.login(process.env.TOKEN || "");
     (_a = Client_1.default.user) === null || _a === void 0 ? void 0 : _a.setPresence({
         status: "dnd",
         activities: [

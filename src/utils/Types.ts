@@ -1,13 +1,8 @@
-export interface Sessions {
-  FP1: string;
-  FP2: string;
-  FP3?: string;
-  Quali: string;
-  SprintQuali?: string;
-  Race: string;
-}
-
-export type Race = {
+export type SessionType = "FP1" | "FP2" | "FP3" | "Quali" | "Sprint" | "Race";
+export default interface Session {
   name: string;
-  sessions: Sessions;
-};
+  date: string;
+  type: SessionType;
+  year: number;
+  notified?: boolean;
+}
