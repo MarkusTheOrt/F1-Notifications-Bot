@@ -4,6 +4,7 @@ import Database from "./Database";
 import { ObjectId, WithId } from "mongodb";
 import Session from "../utils/Types";
 import { TextChannel } from "discord.js";
+import Config from "../Config";
 
 Client.on("ready", async () => {
   while (true) {
@@ -32,14 +33,12 @@ Client.on("ready", async () => {
         { _id: session._id },
         { $set: { notified: true } }
       );
-      (Client.channels.cache.get(process.env.CHANNEL!) as TextChannel).send(
-        `** <@&${process.env.ROLE!}> ${session.name} ${
-          session.type
-        } is about to start** <t:${time}:R>`
+      (Client.channels.cache.get(Config.channel) as TextChannel).send(
+        `** <@&${Config.role}> ${session.name} ${session.type} is about to start** <t:${time}:R>`
       );
     }
     console.log("Pingus Butus!");
-    await new Promise((resolve) => setTimeout(resolve, 60 * 1000));
+    await new Promise((resolve) => setTimeout(resolve, Config.interval * 1000));
   }
 });
 
