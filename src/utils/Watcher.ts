@@ -32,8 +32,10 @@ Client.on("ready", async () => {
         { _id: session._id },
         { $set: { notified: true } }
       );
-      (Client.channels.cache.get("883847531631611936") as TextChannel).send(
-        `** <@&942179808136298516> ${session.name} ${session.type} is about to start** <t:${time}:R>`
+      (Client.channels.cache.get(process.env.CHANNEL!) as TextChannel).send(
+        `** <@&${process.env.ROLE!}> ${session.name} ${
+          session.type
+        } is about to start** <t:${time}:R>`
       );
     }
     console.log("Pingus Butus!");

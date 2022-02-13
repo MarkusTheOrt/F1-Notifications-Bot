@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "f1-notifications-bot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Discord bot that notifies a certain Discord Role once a new F1 Session (Practice, Quali, Race) starts.",
   "main": "dist/app.js",
   "scripts": {
