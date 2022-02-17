@@ -1,6 +1,7 @@
 import Config from "./Config";
 import Client from "./utils/Client";
 import Database from "./utils/Database";
+import Deleter from "./utils/Deleter";
 import Watcher from "./utils/Watcher";
 
 Client.on("ready", () => {
@@ -8,6 +9,7 @@ Client.on("ready", () => {
 });
 
 [Watcher];
+[Deleter];
 (async () => {
   await Database.Connect();
   await Client.login(Config.token);
