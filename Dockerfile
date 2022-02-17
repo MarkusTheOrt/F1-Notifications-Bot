@@ -16,6 +16,6 @@ FROM node:lts-alpine
 
 RUN mkdir /f1-notif/
 
-COPY --from=build-stage /f1-notif/dist/ .
+COPY --from=build-stage /f1-notif/ .
 
-CMD node index.js
+CMD node ./dist/index.js
