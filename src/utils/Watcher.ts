@@ -37,7 +37,7 @@ Client.on("ready", async () => {
         `** <@&${Config.role}> ${session.name} ${session.type} is about to start** <t:${time}:R>`
       );
     }
-    console.log("Pingus Butus!");
+
     await new Promise((resolve) => setTimeout(resolve, Config.interval * 1000));
   }
 });

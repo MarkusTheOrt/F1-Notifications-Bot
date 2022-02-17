@@ -1,4 +1,4 @@
-FROM node:lts-bullseye
+FROM node:lts-bullseye as build-stage
 
 RUN mkdir /f1-notif
 COPY package*.json /f1-notif/
@@ -12,4 +12,10 @@ RUN npm install -g typescript
 
 RUN tsc
 
-CMD node dist/index.js
+FROM node:lts-alpine
+
+RUN mkdir /f1-notif/
+
+COPY --from=build-stage /f1-notif/ .
+
+CMD node ./dist/index.js
