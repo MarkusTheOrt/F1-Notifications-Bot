@@ -45,7 +45,7 @@ Client.on("ready", async () => {
         messageId: msg.id,
       });
     }
-    console.log("Pingus Butus!");
+
     await new Promise((resolve) => setTimeout(resolve, Config.interval * 1000));
   }
 });
