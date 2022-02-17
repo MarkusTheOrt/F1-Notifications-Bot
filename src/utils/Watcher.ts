@@ -33,9 +33,17 @@ Client.on("ready", async () => {
         { _id: session._id },
         { $set: { notified: true } }
       );
-      (Client.channels.cache.get(Config.channel) as TextChannel).send(
+      const msg = await (
+        Client.channels.cache.get(Config.channel) as TextChannel
+      ).send(
         `** <@&${Config.role}> ${session.name} ${session.type} is about to start** <t:${time}:R>`
       );
+      if (msg === null) continue;
+      await Database.Messages?.insertOne({
+        for: session._id,
+        date: session.date,
+        messageId: msg.id,
+      });
     }
     console.log("Pingus Butus!");
     await new Promise((resolve) => setTimeout(resolve, Config.interval * 1000));
