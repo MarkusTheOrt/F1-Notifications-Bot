@@ -6,10 +6,10 @@ import Watcher from "./utils/Watcher";
 
 Client.on("ready", () => {
   console.log("Bot is connected as " + Client.user!.tag);
+  Client.channels.fetch(Config.channel, { cache: true });
 });
 
-[Watcher];
-[Deleter];
+[Watcher, Deleter];
 (async () => {
   await Database.Connect();
   await Client.login(Config.token);
