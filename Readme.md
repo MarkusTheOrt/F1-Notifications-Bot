@@ -16,7 +16,7 @@ Edit the file at `src/Config.ts`
 export default {
   mongoUrl: process.env.MONGO ?? "YOUR DATABASE URL",
   mongoDb: process.env.DBNAME ?? "YOUR DATABASE NAME",
-  token: process.env.TOKEN ??"YOUR DISCORD BOT TOKEN"
+  token: process.env.TOKEN ??"YOUR DISCORD BOT TOKEN",
   channel: process.env.CHANNEL ?? "YOUR CHANNEL ID",
   role: process.env.ROLE ?? "YOUR ROLE ID",
   interval: process.env.INTERVAL ? parseInt(process.env.INTERVAL) : 60
