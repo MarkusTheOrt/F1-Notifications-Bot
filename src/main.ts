@@ -12,7 +12,7 @@ Client.on("ready", () => {
 });
 
 // Activate both the watcher and deleter functions.
-[Watcher, Deleter];
+[Watcher]; //, Deleter];
 (async () => {
   await Database.Connect();
   await Client.login(Config.token);

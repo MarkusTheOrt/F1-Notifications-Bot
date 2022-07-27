@@ -2,7 +2,6 @@ import Client from "./Client.js";
 import Config from "../Config.js";
 import Database from "./Database.js";
 import { TextChannel } from "discord.js";
-import moment from "moment";
 
 Client.on("ready", async () => {
   while (true) {
@@ -13,8 +12,8 @@ Client.on("ready", async () => {
       if (message === undefined || message === null) continue;
 
       // Only delete Messages that are older than 30 Minutes.
-      if (Math.abs(moment(message.date).diff(moment.now())) < 30 * 60 * 1000)
-        continue;
+      //if (Math.abs(moment(message.date).diff(moment.now())) < 30 * 60 * 1000)
+      //  continue;
 
       const Channel = Client.channels.cache.get(Config.channel) as TextChannel;
       if (Channel === null) continue;
