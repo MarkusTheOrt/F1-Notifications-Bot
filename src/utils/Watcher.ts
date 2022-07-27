@@ -1,18 +1,21 @@
-import moment from "moment";
-import Client from "./Client";
-import Database from "./Database";
-import {MessageAttachment, TextChannel} from "discord.js";
-import Config from "../Config";
+import Client from "./Client.js";
+import Database from "./Database.js";
+import { MessageAttachment, TextChannel } from "discord.js";
+import Config from "../Config.js";
+import MessageParser from "./MessageParser.js";
+import Constants from "./Constants.js";
+import { MinDate } from "./DateTool.js";
+import { ObjectID } from "bson";
 
 Client.on("ready", async () => {
   while (true) {
     const events = Database.Events!.find({
       notified: { $exists: false },
     });
-    // Go five minutes into the future, so we can notify a bit before.
-    const now = moment().utc().add(5, "minutes");
 
-    let difference = 100000000;
+    // This time is set 5 minutes into the future so we can notify a little ahead.
+    const projectedTime = Date.now() + Constants.futureProjection;
+    let difference = Constants.defTimeApart;
     let session = null;
 
     // Iterate through events.
@@ -20,30 +23,16 @@ Client.on("ready", async () => {
       const event = await events.next();
       if (event === null) continue;
 
-      const parsed = moment(event.date);
-      const diff = now.diff(parsed) / 1000;
-      // Check if the Difference is smaller than 100 seconds to post.
-      if (Math.abs(diff) < difference && Math.abs(diff) < 100) {
-        difference = Math.abs(diff);
-        session = event;
-        events.close();
-        break;
-      }
-    }
-    if (session !== null) {
-      const time = parseInt(moment(session.date).format("x")) / 1000;
-      session.notified = true;
-      Database.Events?.updateOne(
-        { _id: session._id },
-        { $set: { notified: true } }
-      );
-      // txt `** <@&${Config.role}> ${session.name} ${session.type} is about to start** <t:${time}:R>`
-      let attach = new MessageAttachment("https://fia.ort.dev/F1themecats.mp4", 'f1themecats.mp4');
-      const msg = await (
-        Client.channels.cache.get(Config.channel) as TextChannel
-      ).send(
-          { content: `** <@&${Config.role}> ${session.name} ${session.type} is about to start** <t:${time}:R>`, files: [attach] }
-      );
+      // DELETE PLEASE
+      const msg = {
+        id: "1245",
+      };
+      const session = {
+        _id: new ObjectID(),
+        date: "124",
+        messageId: "124",
+      };
+      // END OF DELETE BLOCK
 
       if (msg === null) continue;
       await Database.Messages?.insertOne({

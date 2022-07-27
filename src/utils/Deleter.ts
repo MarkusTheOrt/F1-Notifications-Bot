@@ -1,6 +1,6 @@
-import Client from "./Client";
-import Config from "../Config";
-import Database from "./Database";
+import Client from "./Client.js";
+import Config from "../Config.js";
+import Database from "./Database.js";
 import { TextChannel } from "discord.js";
 import moment from "moment";
 

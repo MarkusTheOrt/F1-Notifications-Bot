@@ -1,9 +1,9 @@
 import { TextChannel } from "discord.js";
-import Config from "./Config";
-import Client from "./utils/Client";
-import Database from "./utils/Database";
-import Deleter from "./utils/Deleter";
-import Watcher from "./utils/Watcher";
+import Config from "./Config.js";
+import Client from "./utils/Client.js";
+import Database from "./utils/Database.js";
+import Deleter from "./utils/Deleter.js";
+import Watcher from "./utils/Watcher.js";
 
 Client.on("ready", () => {
   console.log("Bot is connected as " + Client.user!.tag);

@@ -1,17 +1,16 @@
 {
   "compilerOptions": {
-    "outDir": "build",
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "outDir": "build",
     "rootDir": "src",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
+
     "strict": true,
-    "skipLibCheck": false,
-    "paths": {
-      "$lib": ["lib/"]
-    }
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
+
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": false
   },
-  "exclude": ["build", "node_modules"],
+  "exclude": ["build", "node_modules"]
 }

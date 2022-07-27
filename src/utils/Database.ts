@@ -1,6 +1,6 @@
 import { Collection, Db, MongoClient } from "mongodb";
-import Config from "../Config";
-import Session, { Message } from "./Types";
+import Config from "../Config.js";
+import Session, { Message } from "./Types.js";
 
 class Database {
   private client: MongoClient;
