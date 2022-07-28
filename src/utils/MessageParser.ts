@@ -3,8 +3,17 @@ import Constants from "./Constants";
 import MakeTimestamp from "./DiscordTimeStamp";
 import { Weekend } from "./Types";
 
-export default (role: string, weekend: Weekend, session: number): any => {
-  let attachmentId = parseInt(
+export interface messageContent {
+  content: string;
+  files: MessageAttachment[];
+}
+
+export default (
+  role: string,
+  weekend: Weekend,
+  session: number
+): messageContent => {
+  const attachmentId = parseInt(
     "" + Math.random() * Constants.attachments.length
   );
   const attachment = new MessageAttachment(

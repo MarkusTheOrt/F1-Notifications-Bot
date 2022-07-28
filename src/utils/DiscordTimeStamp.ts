@@ -1,6 +1,6 @@
 const MakeTimestamp = (
   dateString: string,
-  format: string = "f"
+  format = "f"
 ): string | undefined => {
   try {
     return `<t:${new Date(dateString).getTime() / 1000}:${format}>`;

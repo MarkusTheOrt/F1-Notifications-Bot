@@ -4,7 +4,7 @@ import Database from "./Database.js";
 import { TextChannel } from "discord.js";
 
 Client.on("ready", async () => {
-  while (true) {
+  for (;;) {
     const messages = Database.Messages?.find({});
 
     while (await messages?.hasNext()) {
@@ -20,7 +20,9 @@ Client.on("ready", async () => {
       try {
         await Channel.messages.delete(message.messageId);
         await Database.Messages?.deleteOne({ _id: message._id });
-      } catch {}
+      } catch {
+        console.log("Some error I dunno.");
+      }
     }
 
     await new Promise((resolve) => setTimeout(resolve, Config.interval * 1000));

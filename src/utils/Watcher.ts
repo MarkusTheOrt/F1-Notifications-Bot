@@ -1,23 +1,22 @@
 import Client from "./Client.js";
 import Database from "./Database.js";
-import { MessageAttachment, TextChannel } from "discord.js";
 import Config from "../Config.js";
-import MessageParser from "./MessageParser.js";
 import Constants from "./Constants.js";
-import { MinDate } from "./DateTool.js";
 import { ObjectID } from "bson";
 
 Client.on("ready", async () => {
-  while (true) {
-    const events = Database.Events!.find({
+  for (;;) {
+    const events = Database.Events?.find({
       notified: { $exists: false },
     });
 
     // This time is set 5 minutes into the future so we can notify a little ahead.
     const projectedTime = Date.now() + Constants.futureProjection;
-    let difference = Constants.defTimeApart;
-    let session = null;
+    const difference = Constants.defTimeApart;
+    const session = null;
 
+    console.log(projectedTime, difference, session);
+    if (events === undefined) continue;
     // Iterate through events.
     while (await events?.hasNext()) {
       const event = await events.next();
