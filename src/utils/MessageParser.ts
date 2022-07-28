@@ -1,6 +1,6 @@
 import { MessageAttachment } from "discord.js";
-import Constants from "./Constants";
-import MakeTimestamp from "./DiscordTimeStamp";
+import Constants from "./Constants.js";
+import MakeTimestamp from "./DiscordTimeStamp.js";
 import { Weekend } from "./Types";
 
 export interface messageContent {
@@ -25,7 +25,7 @@ export default (
   return {
     content: `** <@&${role}> ${weekend.prefix ?? ""} ${weekend.name} ${
       fullSession.type
-    } is about to start** ${MakeTimestamp(fullSession.date, "R")}`,
+    } is about to start** ${MakeTimestamp(fullSession.start, "R")}`,
     files: [attachment],
   };
 };

@@ -1,20 +1,14 @@
 import { Collection, Db, MongoClient } from "mongodb";
 import Config from "../Config.js";
-import Session, { Message } from "./Types.js";
+import { Message, Setting, Weekend } from "./Types.js";
 
 class Database {
   private client: MongoClient;
   private db: Db | undefined;
-  private races: Collection<Session> | undefined;
+
   private messages: Collection<Message> | undefined;
-
-  get Events() {
-    return this.races;
-  }
-
-  get Messages() {
-    return this.messages;
-  }
+  private weekends: Collection<Weekend> | undefined;
+  private settings: Collection<Setting> | undefined;
 
   constructor() {
     this.client = new MongoClient(Config.mongoUrl);
@@ -22,13 +16,28 @@ class Database {
   public async Connect() {
     try {
       await this.client.connect();
+
       this.db = this.client.db(Config.mongoDb);
-      this.races = this.db.collection("races");
       this.messages = this.db.collection("messages");
+      this.weekends = this.db.collection("weekends");
+      this.settings = this.db.collection("settings");
+
       console.log("Database Connected!");
     } catch (e) {
       console.log("Database Error");
     }
+  }
+
+  get Messages() {
+    return this.messages;
+  }
+
+  get Weekends() {
+    return this.weekends;
+  }
+
+  get Settings() {
+    return this.settings;
   }
 }
 

@@ -1,7 +1,7 @@
 import Config from "./Config.js";
 import Client from "./utils/Client.js";
 import Database from "./utils/Database.js";
-//import Deleter from "./utils/Deleter.js";
+import Deleter from "./utils/Deleter.js";
 import Watcher from "./utils/Watcher.js";
 
 Client.on("ready", () => {
@@ -11,7 +11,7 @@ Client.on("ready", () => {
 });
 
 // Activate both the watcher and deleter functions.
-[Watcher]; //, Deleter];
+[Watcher, Deleter];
 (async () => {
   await Database.Connect();
   await Client.login(Config.token);
