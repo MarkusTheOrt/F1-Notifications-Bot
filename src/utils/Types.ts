@@ -1,17 +1,8 @@
 import { ObjectId } from "mongodb";
 
-export type SessionType =
-  | "FP1"
-  | "FP2"
-  | "FP3"
-  | "Quali"
-  | "Sprint"
-  | "Race"
-  | "Pre-Season Test";
-
 export interface Session {
   start: string;
-  type: SessionType | string;
+  type: string;
   year: number;
   notified?: boolean;
 }

@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "f1-notifications-bot",
-  "version": "1.2.0-alpha",
+  "version": "1.2.0-beta",
   "description": "Discord bot that notifies a certain Discord Role once a new F1 Session (Practice, Quali, Race) starts.",
   "type": "module",
   "main": "build/main.js",
@@ -18,7 +18,9 @@
     "url": "git+https://github.com/MarkusTheOrt/F1-Notifications-Bot.git"
   },
   "keywords": [
-    "F1"
+    "F1",
+    "Discord",
+    "Notifications"
   ],
   "author": "Markus Ort (markus@ort.dev)",
   "license": "ISC",
@@ -29,15 +31,13 @@
   "dependencies": {
     "@discordjs/rest": "^0.3.0",
     "bufferutil": "^4.0.6",
-    "discord-api-types": "^0.27.0",
     "discord.js": "^13.6.0",
     "erlpack": "^0.1.4",
     "mongodb": "^4.3.1",
-    "node-fetch": "^2.6.7",
     "utf-8-validate": "^5.0.8"
   },
   "devDependencies": {
-    "@types/node": "^18.6.1",
+    "@types/node": "^18.6.2",
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/parser": "^5.31.0",
     "eslint": "^8.20.0",
