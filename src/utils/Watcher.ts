@@ -12,65 +12,22 @@ Client.on("ready", async () => {
   await init();
 
   for (;;) {
-    const now = Date.now();
+    const weekend = await findBestWeekend();
 
-    const weekends =
-      Database.Weekends?.find({ done: { $exists: false } }) ?? null;
-    if (weekends === null) {
-      console.log("No eligible Weekends found!");
-      await new Promise((resolve) =>
-        setTimeout(resolve, Config.interval * 1000)
-      );
-      continue;
-    }
-
-    let weekendDifference = Constants.defTimeApart;
-    let bestMatch: Weekend | null = null;
-    while (await weekends.hasNext()) {
-      const weekend = await weekends.next();
-
-      const weekendStart = new MinDate(weekend?.start).get().getTime();
-      const tempApart = Math.abs(now - weekendStart);
-      if (tempApart < weekendDifference) {
-        weekendDifference = tempApart;
-        bestMatch = weekend;
-      }
-    }
-
-    if (bestMatch === null) {
+    if (weekend === null) {
       console.log("Couldn't find next Weekend.");
       await new Promise((resolve) =>
         setTimeout(resolve, Config.interval * 1000)
       );
       continue;
     }
-    // This time is set 5 minutes into the future so we can notify a little ahead.
-    const projectedTime = Date.now() + Constants.futureProjection;
-    let bestSessionIndex = -1;
-    let sessionDifference = Constants.defTimeApart;
-    for (let i = 0; i < bestMatch.sessions.length; i++) {
-      const session = bestMatch.sessions[i];
-      if (session.notified) continue;
-      const sessionTime = new MinDate(session.start).get().getTime();
-      const timeBetween = projectedTime - sessionTime;
-
-      if (bestSessionIndex === -1 && timeBetween < -Constants.futureProjection)
-        bestSessionIndex = -2;
-
-      if (
-        Math.abs(timeBetween) < sessionDifference &&
-        Math.abs(timeBetween) < 100 * 1000
-      ) {
-        sessionDifference = timeBetween;
-        bestSessionIndex = i;
-      }
-    }
+    const bestSessionIndex = findBestSession(weekend);
 
     if (bestSessionIndex === -1) {
       console.log("Couldn't find next Session, Marking Weekend as done.");
       await Database.Weekends?.updateOne(
         {
-          _id: bestMatch._id,
+          _id: weekend._id,
         },
         {
           $set: {
@@ -86,46 +43,97 @@ Client.on("ready", async () => {
 
     if (bestSessionIndex === -2) {
       console.log("There are current events, but none are close.");
-      await UpdateMessage(bestMatch);
+      await UpdateMessage(weekend);
       await new Promise((resolve) =>
         setTimeout(resolve, Config.interval * 1000)
       );
       continue;
     }
 
-    const channel = (await Client.channels.cache.get(
-      Config.channel
-    )) as TextChannel;
+    const channel = Client.channels.cache.get(Config.channel) as TextChannel;
 
-    const message = await channel.send(
-      MessageParser(Config.role, bestMatch, bestSessionIndex)
-    );
-
-    if (message === null) {
+    let message = null;
+    try {
+      message = await channel.send(
+        MessageParser(Config.role, weekend, bestSessionIndex)
+      );
+    } catch (e) {
       console.log("Couldn't Send Message. Skipping as to not spam.");
+      console.log(e);
     }
-    bestMatch.sessions[bestSessionIndex].notified = true;
+
+    weekend.sessions[bestSessionIndex].notified = true;
     await Database.Weekends?.updateOne(
       {
-        _id: bestMatch._id,
+        _id: weekend._id,
       },
       {
         $set: {
-          sessions: bestMatch.sessions,
+          sessions: weekend.sessions,
         },
       }
     );
-    await Database.Messages?.insertOne({
-      weekend: bestMatch._id,
-      session: bestSessionIndex,
-      date: bestMatch.sessions[bestSessionIndex].start,
-      messageId: message.id,
-    });
+    if (message !== null) {
+      await Database.Messages?.insertOne({
+        weekend: weekend._id,
+        session: bestSessionIndex,
+        date: weekend.sessions[bestSessionIndex].start,
+        messageId: message.id,
+      });
+    }
 
-    await UpdateMessage(bestMatch);
-
+    await UpdateMessage(weekend);
     await new Promise((resolve) => setTimeout(resolve, Config.interval * 1000));
   }
 });
+
+export const findBestWeekend = async (): Promise<Weekend | null> => {
+  let weekendDifference = Constants.defTimeApart;
+  let bestMatch: Weekend | null = null;
+  const now = Date.now();
+
+  const weekends =
+    Database.Weekends?.find({ done: { $exists: false } }) ?? null;
+  if (weekends === null) {
+    console.log("No eligible Weekends found!");
+    return bestMatch;
+  }
+
+  while (await weekends.hasNext()) {
+    const weekend = await weekends.next();
+    const weekendStart = new MinDate(weekend?.start).get().getTime();
+    const tempApart = Math.abs(now - weekendStart);
+
+    if (tempApart < weekendDifference) {
+      weekendDifference = tempApart;
+      bestMatch = weekend;
+    }
+  }
+  return bestMatch;
+};
+
+export const findBestSession = (weekend: Weekend): number => {
+  const now = Date.now() + Constants.futureProjection;
+  let bestIndex = -1;
+  let timeApart = Constants.defTimeApart;
+  for (let i = 0; i < weekend.sessions.length; i++) {
+    const session = weekend.sessions[i];
+    if (session.notified) continue;
+    const sessionTime = new MinDate(session.start).get().getTime();
+    const timeBetween = now - sessionTime;
+
+    if (bestIndex === -1 && timeBetween < -Constants.futureProjection)
+      bestIndex = -2;
+
+    if (
+      Math.abs(timeBetween) < timeApart &&
+      Math.abs(timeBetween) < 100 * 1000
+    ) {
+      timeApart = timeBetween;
+      bestIndex = i;
+    }
+  }
+  return bestIndex;
+};
 
 export default null;

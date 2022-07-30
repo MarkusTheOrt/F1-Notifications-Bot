@@ -22,4 +22,21 @@ export class MinDate {
   get() {
     return this.date;
   }
+
+  // Wether the date is in the past.
+  get inPast() {
+    return this.date.getTime() < Date.now();
+  }
+
+  MinDateDifference(to: MinDate): number {
+    return this.get().getTime() - to.get().getTime();
+  }
+
+  DateDifference(to: Date): number {
+    return this.get().getTime() - to.getTime();
+  }
+
+  numberDifference(to: number): number {
+    return this.get().getTime() - to;
+  }
 }
