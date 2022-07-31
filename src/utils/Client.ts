@@ -1,6 +1,5 @@
 import { Intents, Client as DiscordClient } from "discord.js";
 import Config from "../Config.js";
-import { Calendar, NoCalData, ParseCalendar } from "./Calendar.js";
 
 const Client = new DiscordClient({
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
