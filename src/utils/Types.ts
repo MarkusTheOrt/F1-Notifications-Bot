@@ -1,16 +1,30 @@
 import { ObjectId } from "mongodb";
 
-export type SessionType = "FP1" | "FP2" | "FP3" | "Quali" | "Sprint" | "Race";
-export default interface Session {
-  name: string;
-  date: string;
-  type: SessionType;
+export interface Session {
+  start: string;
+  type: string;
   year: number;
   notified?: boolean;
 }
 
 export interface Message {
-  for: ObjectId;
+  weekend: ObjectId;
+  session: number;
   messageId: string;
   date: string;
+}
+
+export interface Setting {
+  name: string;
+  value: string | number | object;
+}
+
+export interface Weekend {
+  _id: ObjectId;
+  name: string;
+  start: string;
+  prefix?: string; // For the :flag_hu: emote. This way it is easier to filter.
+  sessions: Session[];
+  current?: boolean;
+  done?: boolean;
 }

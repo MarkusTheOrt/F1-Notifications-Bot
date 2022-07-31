@@ -1,9 +1,11 @@
 export default {
   mongoUrl: process.env.MONGO ?? "",
-  mongoDb: process.env.DBNAME ?? "",
+  mongoDb: process.env.DBNAME ?? "f1-notif-bot",
   token: process.env.TOKEN ?? "",
-  channel: process.env.CHANNEL ?? "",
+  channel: process.env.CHANNEL ?? "906261020119531560",
   role: process.env.ROLE ?? "",
+  f2role: process.env.ROLE ?? "",
+  f3role: process.env.ROLE ?? "",
   guild: process.env.GUILD ?? "177387572505346048",
   interval: process.env.INTERVAL ? parseInt(process.env.INTERVAL) : 60,
 };

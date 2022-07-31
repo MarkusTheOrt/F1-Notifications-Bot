@@ -8,9 +8,7 @@ RUN npm install
 
 COPY . .
 
-RUN npm install -g typescript
-
-RUN tsc
+RUN npm run build
 
 FROM node:lts-alpine
 
@@ -18,4 +16,4 @@ RUN mkdir /f1-notif/
 
 COPY --from=build-stage /f1-notif/ .
 
-CMD node ./dist/index.js
+CMD npm run serve
