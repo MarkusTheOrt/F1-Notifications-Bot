@@ -75,7 +75,7 @@ export const UpdateMessage = async (weekend: Weekend) => {
     if (inPast) message += "~~";
   }
   await infoMessage.edit(
-    `Click 📣 in <#887772313565659226> to get a notification when a session is live.\n\nNext race:\n**${weekend.prefix} ${weekend.name}**${message}`
+    `Click 📣 in <#913752470293991424> to get a notification when a session is live.\n\nNext race:\n**${weekend.prefix} ${weekend.name}**${message}`
   );
 };
 

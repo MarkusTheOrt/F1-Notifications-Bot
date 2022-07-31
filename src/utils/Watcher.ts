@@ -126,12 +126,11 @@ export const findBestSession = (weekend: Weekend): number => {
     if (bestIndex === -1 && timeBetween < -Constants.futureProjection)
       bestIndex = -2;
 
-    if (
-      Math.abs(timeBetween) < timeApart &&
-      Math.abs(timeBetween) < 100 * 1000
-    ) {
+    if (Math.abs(timeBetween) < timeApart) {
       timeApart = timeBetween;
-      bestIndex = i;
+      if (Math.abs(timeBetween) < 200 * 1000) {
+        bestIndex = i;
+      }
     }
   }
   return bestIndex;
