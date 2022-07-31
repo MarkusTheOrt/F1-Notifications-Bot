@@ -16,7 +16,7 @@ export interface Message {
 
 export interface Setting {
   name: string;
-  value: string | number | object;
+  value: string | number | object | [];
 }
 
 export interface Weekend {
@@ -25,6 +25,7 @@ export interface Weekend {
   start: string;
   prefix?: string; // For the :flag_hu: emote. This way it is easier to filter.
   sessions: Session[];
-  current?: boolean;
+  f2?: Session[];
+  f3?: Session[];
   done?: boolean;
 }

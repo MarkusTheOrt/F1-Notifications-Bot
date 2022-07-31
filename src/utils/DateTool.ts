@@ -39,4 +39,8 @@ export class MinDate {
   numberDifference(to: number): number {
     return this.get().getTime() - to;
   }
+
+  getTime() {
+    return this.date.getTime();
+  }
 }
