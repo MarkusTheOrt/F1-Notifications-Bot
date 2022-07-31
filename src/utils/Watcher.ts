@@ -21,6 +21,7 @@ Client.on("ready", async () => {
       );
       continue;
     }
+    await UpdateMessage(weekend);
     const bestSessionIndex = findBestSession(weekend);
 
     if (bestSessionIndex === -1) {
@@ -43,7 +44,7 @@ Client.on("ready", async () => {
 
     if (bestSessionIndex === -2) {
       console.log("There are current events, but none are close.");
-      await UpdateMessage(weekend);
+
       await new Promise((resolve) =>
         setTimeout(resolve, Config.interval * 1000)
       );
