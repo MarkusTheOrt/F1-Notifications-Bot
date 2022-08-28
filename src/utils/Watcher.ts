@@ -128,9 +128,9 @@ export const findBestSession = (weekend: Weekend): number => {
 
     if (Math.abs(timeBetween) < timeApart) {
       timeApart = timeBetween;
-      if (Math.abs(timeBetween) < 200 * 1000) {
-        bestIndex = i;
-      }
+    }
+    if (Math.abs(timeBetween) < 200 * 1000) {
+      bestIndex = i;
     }
   }
   return bestIndex;
