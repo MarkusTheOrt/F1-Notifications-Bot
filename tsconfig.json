@@ -10,7 +10,7 @@
     "allowSyntheticDefaultImports": true,
 
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": false
+    "skipLibCheck": true
   },
-  "exclude": ["build", "node_modules"]
+  "exclude": ["build", "./node_modules/*"]
 }

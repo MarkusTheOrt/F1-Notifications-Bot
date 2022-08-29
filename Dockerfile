@@ -4,7 +4,7 @@ RUN mkdir /f1-notif
 COPY package*.json /f1-notif/
 WORKDIR /f1-notif/
 
-RUN npm install
+RUN npm ci
 
 COPY . .
 
