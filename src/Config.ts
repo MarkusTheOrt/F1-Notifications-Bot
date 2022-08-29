@@ -1,5 +1,5 @@
 export default {
-  mongoUrl: process.env.MONGO ?? "",
+  mongoUrl: process.env.MONGO ?? "mongodb://127.0.0.1/f1-notif-bot",
   mongoDb: process.env.DBNAME ?? "f1-notif-bot",
   token: process.env.TOKEN ?? "",
   channel: process.env.CHANNEL ?? "906261020119531560",

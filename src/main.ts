@@ -1,3 +1,4 @@
+import { ActivityType } from "discord.js";
 import Config from "./Config.js";
 import Client from "./utils/Client.js";
 import Database from "./utils/Database.js";
@@ -21,7 +22,7 @@ Client.on("ready", () => {
     activities: [
       {
         name: "for a new Session",
-        type: "LISTENING",
+        type: ActivityType.Listening,
       },
     ],
   });

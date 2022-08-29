@@ -39,4 +39,12 @@ export class MinDate {
   numberDifference(to: number): number {
     return this.get().getTime() - to;
   }
+
+  get timestamp() {
+    return this.get().getTime();
+  }
+
+  discordStamp(format = "f") {
+    return `<t:${this.timestamp / 1000}:${format}>`;
+  }
 }

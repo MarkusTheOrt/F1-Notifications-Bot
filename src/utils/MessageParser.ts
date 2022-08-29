@@ -1,11 +1,11 @@
-import { MessageAttachment } from "discord.js";
+import { AttachmentBuilder } from "discord.js";
 import Constants from "./Constants.js";
 import MakeTimestamp from "./DiscordTimeStamp.js";
 import { Weekend } from "./Types";
 
 export interface messageContent {
   content: string;
-  files: MessageAttachment[];
+  files: AttachmentBuilder[];
 }
 
 export default (
@@ -16,10 +16,9 @@ export default (
   const attachmentId = parseInt(
     "" + Math.random() * Constants.attachments.length
   );
-  const attachment = new MessageAttachment(
-    Constants.attachments[attachmentId].url,
-    Constants.attachments[attachmentId].name
-  );
+  const attachment = new AttachmentBuilder(
+    Constants.attachments[attachmentId].url
+  ).setName(Constants.attachments[attachmentId].name);
 
   const fullSession = weekend.sessions[session];
   return {

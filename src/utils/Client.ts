@@ -1,8 +1,9 @@
-import { Intents, Client as DiscordClient } from "discord.js";
+import { Client as DiscordClient } from "discord.js";
+import { GatewayIntentBits } from "discord.js";
 import Config from "../Config.js";
 
 const Client = new DiscordClient({
-  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
 });
 
 Client.on("ready", () => {
