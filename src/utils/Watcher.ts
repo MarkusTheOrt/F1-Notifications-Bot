@@ -24,8 +24,9 @@ Client.on("ready", async () => {
     await UpdateMessage(weekend);
     const bestSessionIndex = findBestSession(weekend);
 
+    // Weekend has no sessions left.
     if (bestSessionIndex === -1) {
-      console.log("Couldn't find next Session, Marking Weekend as done.");
+      console.log("Trying to mark as bs");
       await Database.Weekends?.updateOne(
         {
           _id: weekend._id,
@@ -42,17 +43,16 @@ Client.on("ready", async () => {
       continue;
     }
 
+    // Weekend has sessions in the future but now now.
     if (bestSessionIndex === -2) {
-      console.log("There are current events, but none are close.");
-
       await new Promise((resolve) =>
         setTimeout(resolve, Config.interval * 1000)
       );
       continue;
     }
 
+    // Weekend has a current session.
     const channel = Client.channels.cache.get(Config.channel) as TextChannel;
-
     let message = null;
     try {
       message = await channel.send(
@@ -113,6 +113,12 @@ export const findBestWeekend = async (): Promise<Weekend | null> => {
   return bestMatch;
 };
 
+/**
+ * Finds the best session available.
+ * @param weekend The Weekend in which to search for.
+ * @returns The index of the Session \
+ * -1 = No sessions left | -2 = Sessions left but none close.
+ */
 export const findBestSession = (weekend: Weekend): number => {
   const now = Date.now() + Constants.futureProjection;
   let bestIndex = -1;
@@ -123,14 +129,21 @@ export const findBestSession = (weekend: Weekend): number => {
     const sessionTime = new MinDate(session.start).get().getTime();
     const timeBetween = now - sessionTime;
 
-    if (bestIndex === -1 && timeBetween < -Constants.futureProjection)
+    // Date is in the future, mark as such and skip.
+    if (
+      bestIndex < 0 &&
+      timeBetween < -Constants.futureProjection + 200 * 1000
+    ) {
       bestIndex = -2;
+      continue;
+    }
 
     if (Math.abs(timeBetween) < timeApart) {
       timeApart = timeBetween;
-    }
-    if (Math.abs(timeBetween) < 200 * 1000) {
-      bestIndex = i;
+
+      if (Math.abs(timeBetween) < 200 * 1000) {
+        bestIndex = i;
+      }
     }
   }
   return bestIndex;
