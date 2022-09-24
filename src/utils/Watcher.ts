@@ -5,104 +5,129 @@ import Constants from "./Constants.js";
 import { MinDate } from "./DateTool.js";
 import { Weekend } from "./Types.js";
 import { TextChannel } from "discord.js";
-import { init, UpdateMessage } from "./PersistentMessage.js";
+import { DeleteMessage, UpdateMessage } from "./PersistentMessage.js";
 import MessageParser from "./MessageParser.js";
+import { Option, isSome, isNone, none, unwrap } from "./Optional.js";
+import Try from "./Try.js";
+import { WithId } from "mongodb";
 
-Client.on("ready", async () => {
-  await init();
+const Watcher = () => {
+  Client.on("ready", async () => {
+    console.log("Watcher initialized.");
+    for (;;) {
+      const weekend = await findBestWeekend();
 
-  for (;;) {
-    const weekend = await findBestWeekend();
-
-    if (weekend === null) {
-      console.log("Couldn't find next Weekend.");
-      await new Promise((resolve) =>
-        setTimeout(resolve, Config.interval * 1000)
-      );
-      continue;
-    }
-    await UpdateMessage(weekend);
-    const bestSessionIndex = findBestSession(weekend);
-
-    // Weekend has no sessions left.
-    if (bestSessionIndex === -1) {
-      console.log("Trying to mark as bs");
-      await Database.Weekends?.updateOne(
-        {
-          _id: weekend._id,
-        },
-        {
-          $set: {
-            done: true,
-          },
-        }
-      );
-      await new Promise((resolve) =>
-        setTimeout(resolve, Config.interval * 1000)
-      );
-      continue;
-    }
-
-    // Weekend has sessions in the future but now now.
-    if (bestSessionIndex === -2) {
-      await new Promise((resolve) =>
-        setTimeout(resolve, Config.interval * 1000)
-      );
-      continue;
-    }
-
-    // Weekend has a current session.
-    const channel = Client.channels.cache.get(Config.channel) as TextChannel;
-    let message = null;
-    try {
-      message = await channel.send(
-        MessageParser(Config.role, weekend, bestSessionIndex)
-      );
-    } catch (e) {
-      console.log("Couldn't Send Message. Skipping as to not spam.");
-      console.log(e);
-    }
-
-    weekend.sessions[bestSessionIndex].notified = true;
-    await Database.Weekends?.updateOne(
-      {
-        _id: weekend._id,
-      },
-      {
-        $set: {
-          sessions: weekend.sessions,
-        },
+      if (isNone(weekend)) {
+        console.log("Couldn't find next Weekend.");
+        await new Promise((resolve) =>
+          setTimeout(resolve, Config.interval * 1000)
+        );
+        continue;
       }
-    );
-    if (message !== null) {
-      await Database.Messages?.insertOne({
-        weekend: weekend._id,
-        session: bestSessionIndex,
-        date: weekend.sessions[bestSessionIndex].start,
-        messageId: message.id,
-      });
+      await UpdateMessage(unwrap(weekend));
+      const found_session = findBestSession(unwrap(weekend));
+
+      // Weekend has no sessions left.
+      if (is_no_session(found_session)) {
+        console.log("Trying to mark as bs");
+
+        if (
+          isNone(
+            await Try(
+              Database.Weekends.updateOne(
+                {
+                  _id: unwrap(weekend)._id,
+                },
+                {
+                  $set: {
+                    done: true,
+                  },
+                }
+              )
+            )
+          )
+        ) {
+          console.error("Couldn't mark weekend as done.");
+        }
+        await DeleteMessage();
+        await new Promise((resolve) =>
+          setTimeout(resolve, Config.interval * 1000)
+        );
+        continue;
+      }
+
+      // Weekend has sessions in the future but now now.
+      if (is_future_session(found_session)) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, Config.interval * 1000)
+        );
+        continue;
+      }
+
+      // Weekend has a current session.
+      const channel = Client.channels.cache.get(Config.channel) as TextChannel;
+      const message = await Try(
+        channel.send(
+          MessageParser(Config.role, unwrap(weekend), found_session.index)
+        )
+      );
+      if (isNone(message)) {
+        console.error("Couldn't send Message. Skipping as not to spam.");
+      }
+
+      unwrap(weekend).sessions[found_session.index].notified = true;
+      if (
+        isNone(
+          await Try(
+            Database.Weekends.updateOne(
+              {
+                _id: unwrap(weekend)._id,
+              },
+              {
+                $set: {
+                  sessions: unwrap(weekend).sessions,
+                },
+              }
+            )
+          )
+        )
+      ) {
+        console.error("Couldn't update sessions in weekend structure.");
+      }
+      if (isSome(message)) {
+        await Try(
+          Database.Messages?.insertOne({
+            weekend: unwrap(weekend)._id,
+            session: found_session.index,
+            date: unwrap(weekend).sessions[found_session.index].start,
+            messageId: unwrap(message).id,
+          })
+        );
+      }
+
+      await UpdateMessage(unwrap(weekend));
+      await new Promise((resolve) =>
+        setTimeout(resolve, Config.interval * 1000)
+      );
     }
+  });
+};
 
-    await UpdateMessage(weekend);
-    await new Promise((resolve) => setTimeout(resolve, Config.interval * 1000));
-  }
-});
-
-export const findBestWeekend = async (): Promise<Weekend | null> => {
+export const findBestWeekend = async () => {
   let weekendDifference = Constants.defTimeApart;
-  let bestMatch: Weekend | null = null;
+  let bestMatch: Option<WithId<Weekend>> = none;
   const now = Date.now();
 
-  const weekends =
-    Database.Weekends?.find({ done: { $exists: false } }) ?? null;
+  const weekends = Database.Weekends.find({ done: { $exists: false } });
   if (weekends === null) {
     console.log("No eligible Weekends found!");
-    return bestMatch;
+    return none;
   }
 
   while (await weekends.hasNext()) {
-    const weekend = await weekends.next();
-    const weekendStart = new MinDate(weekend?.start).get().getTime();
+    const weekend = await Try(weekends.next());
+    if (isNone(weekend)) continue;
+    const weekendStart = new MinDate(unwrap(weekend).start).get().getTime();
     const tempApart = Math.abs(now - weekendStart);
 
     if (tempApart < weekendDifference) {
@@ -113,15 +138,42 @@ export const findBestWeekend = async (): Promise<Weekend | null> => {
   return bestMatch;
 };
 
+interface NoSession {
+  readonly _tag: "no_session";
+}
+
+interface FutureSession {
+  readonly _tag: "future_session";
+}
+
+interface NextSession {
+  readonly _tag: "next";
+  readonly index: number;
+}
+
+type AvailableSession = NoSession | FutureSession | NextSession;
+
+const no_session: NoSession = { _tag: "no_session" };
+const future_session: FutureSession = { _tag: "future_session" };
+const next_session = (a: number): NextSession => ({ _tag: "next", index: a });
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const has_session = (a: AvailableSession): a is NextSession =>
+  a._tag === "next";
+const is_future_session = (a: AvailableSession): a is FutureSession =>
+  a._tag === "future_session";
+const is_no_session = (a: AvailableSession): a is NoSession =>
+  a._tag === "no_session";
+
 /**
  * Finds the best session available.
  * @param weekend The Weekend in which to search for.
- * @returns The index of the Session \
- * -1 = No sessions left | -2 = Sessions left but none close.
+ * @returns `AvailableSession` - a type which might hold a session or not.
  */
-export const findBestSession = (weekend: Weekend): number => {
+export const findBestSession = (weekend: Weekend): AvailableSession => {
   const now = Date.now() + Constants.futureProjection;
   let bestIndex = -1;
+  let ret: AvailableSession = no_session;
   let timeApart = Constants.defTimeApart;
   for (let i = 0; i < weekend.sessions.length; i++) {
     const session = weekend.sessions[i];
@@ -135,6 +187,7 @@ export const findBestSession = (weekend: Weekend): number => {
       timeBetween < -Constants.futureProjection + 200 * 1000
     ) {
       bestIndex = -2;
+      ret = future_session;
       continue;
     }
 
@@ -143,10 +196,11 @@ export const findBestSession = (weekend: Weekend): number => {
 
       if (Math.abs(timeBetween) < 200 * 1000) {
         bestIndex = i;
+        ret = next_session(i);
       }
     }
   }
-  return bestIndex;
+  return ret;
 };
 
-export default null;
+export default Watcher;

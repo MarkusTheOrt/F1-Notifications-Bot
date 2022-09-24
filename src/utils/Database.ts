@@ -1,14 +1,15 @@
 import { Collection, Db, MongoClient } from "mongodb";
 import Config from "../Config.js";
+import { some, Option, none, unwrap } from "./Optional.js";
 import { Message, Setting, Weekend } from "./Types.js";
 
 class Database {
   private client: MongoClient;
-  private db: Db | undefined;
+  private db: Option<Db> = none;
 
-  private messages: Collection<Message> | undefined;
-  private weekends: Collection<Weekend> | undefined;
-  private settings: Collection<Setting> | undefined;
+  private messages: Option<Collection<Message>> = none;
+  private weekends: Option<Collection<Weekend>> = none;
+  private settings: Option<Collection<Setting>> = none;
 
   constructor() {
     this.client = new MongoClient(Config.mongoUrl);
@@ -17,10 +18,10 @@ class Database {
     try {
       await this.client.connect();
 
-      this.db = this.client.db(Config.mongoDb);
-      this.messages = this.db.collection("messages");
-      this.weekends = this.db.collection("weekends");
-      this.settings = this.db.collection("settings");
+      this.db = some(this.client.db(Config.mongoDb));
+      this.messages = some(unwrap(this.db).collection("messages"));
+      this.weekends = some(unwrap(this.db).collection("weekends"));
+      this.settings = some(unwrap(this.db).collection("settings"));
 
       console.log("Database Connected!");
     } catch (e) {
@@ -29,15 +30,15 @@ class Database {
   }
 
   get Messages() {
-    return this.messages;
+    return unwrap(this.messages);
   }
 
   get Weekends() {
-    return this.weekends;
+    return unwrap(this.weekends);
   }
 
   get Settings() {
-    return this.settings;
+    return unwrap(this.settings);
   }
 }
 
