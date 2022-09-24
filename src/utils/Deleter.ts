@@ -3,35 +3,58 @@ import Config from "../Config.js";
 import Database from "./Database.js";
 import { TextChannel } from "discord.js";
 import { MinDate } from "./DateTool.js";
+import Try from "./Try.js";
+import { isNone, unwrap, wrap } from "./Optional.js";
 
-Client.on("ready", async () => {
-  for (;;) {
-    const messages = Database.Messages?.find({});
+const Deleter = () => {
+  Client.on("ready", async () => {
+    console.log("Deleter initialized.");
+    for (;;) {
+      const messages = Database.Messages.find({});
 
-    while (await messages?.hasNext()) {
-      const message = await messages?.next();
-      if (message === undefined || message === null) continue;
+      while (await messages.hasNext()) {
+        const message = await Try(messages.next());
+        if (isNone(message)) continue;
 
-      const msgDate = new MinDate(message.date).get().getTime();
+        const msgDate = new MinDate(unwrap(message).date).get().getTime();
 
-      if (Math.abs(Date.now() - msgDate) < 30 * 60 * 1000) {
-        continue;
+        if (Math.abs(Date.now() - msgDate) < 30 * 60 * 1000) {
+          continue;
+        }
+
+        const Channel = wrap(
+          Client.channels.cache.get(Config.channel) as TextChannel
+        );
+        if (isNone(Channel)) continue;
+        if (
+          isNone(
+            await Try(
+              unwrap(Channel).messages.delete(unwrap(message).messageId)
+            )
+          )
+        ) {
+          console.trace("Couldn't delete previous message.");
+        }
+
+        if (
+          isNone(
+            await Try(
+              Database.Messages?.deleteOne({ _id: unwrap(message)._id })
+            )
+          )
+        ) {
+          console.trace("Database error deleting message thing.");
+        }
       }
 
-      const Channel = Client.channels.cache.get(Config.channel) as TextChannel;
-      if (Channel === null) continue;
-      try {
-        await Channel.messages.delete(message.messageId);
-        await Database.Messages?.deleteOne({ _id: message._id });
-      } catch {
-        console.log("Database error while deleting.");
-      }
+      await new Promise((resolve) =>
+        setTimeout(resolve, Config.interval * 1000)
+      );
     }
+  });
+};
 
-    await new Promise((resolve) => setTimeout(resolve, Config.interval * 1000));
-  }
-});
 /**
  *
  */
-export default null;
+export default Deleter;

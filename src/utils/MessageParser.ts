@@ -1,4 +1,5 @@
 import { AttachmentBuilder } from "discord.js";
+import Config from "../Config.js";
 import Constants from "./Constants.js";
 import MakeTimestamp from "./DiscordTimeStamp.js";
 import { Weekend } from "./Types";
@@ -22,7 +23,7 @@ export default (
 
   const fullSession = weekend.sessions[session];
   return {
-    content: `** <@&${role}> ${weekend.prefix ?? ""} ${weekend.name} ${
+    content: `** <@&${Config.role}> ${weekend.prefix ?? ""} ${weekend.name} ${
       fullSession.type
     } is about to start** ${MakeTimestamp(fullSession.start, "R")}`,
     files: [attachment],
