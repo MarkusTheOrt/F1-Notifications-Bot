@@ -65,7 +65,15 @@ const Watcher = () => {
       }
 
       // Weekend has a current session.
-      const channel = Client.channels.cache.get(Config.channel) as TextChannel;
+      // If the session is a regular Practice session (FP1, FP2, FP3)
+      // post it in the practice channel -- otherwise in the live channel.
+      const is_practice = is_practice_session(
+        unwrap(weekend),
+        found_session.index
+      );
+      const channel = Client.channels.cache.get(
+        is_practice ? Config.pracChannel : Config.channel
+      ) as TextChannel;
       const message = await Try(
         channel.send(
           MessageParser(Config.role, unwrap(weekend), found_session.index)
@@ -111,6 +119,19 @@ const Watcher = () => {
       );
     }
   });
+};
+
+const is_practice_session = (weekend: Weekend, session: number): boolean => {
+  if (session < 0 || session > weekend.sessions.length) return false;
+  const fullSess = weekend.sessions[session];
+  if (
+    fullSess.type === "FP1" ||
+    fullSess.type === "FP2" ||
+    fullSess.type === "FP3"
+  ) {
+    return true;
+  }
+  return false;
 };
 
 export const findBestWeekend = async () => {

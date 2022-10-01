@@ -8,8 +8,10 @@ import Watcher from "./utils/Watcher.js";
 
 Client.on("ready", () => {
   console.log("Bot is connected as " + Client.user?.tag ?? "Bot error?!");
-  // Make sure the Channel we post in is cached!
+  // Make sure the Channels we post in are cached!
   Client.channels.fetch(Config.channel, { cache: true });
+  Client.channels.fetch(Config.permChannel, { cache: true });
+  Client.channels.fetch(Config.pracChannel, { cache: true });
   // Just a default Presence to make it look nicer.
   Client.user?.setPresence({
     status: "dnd",

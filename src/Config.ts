@@ -3,6 +3,7 @@ export default {
   mongoDb: process.env.DBNAME ?? "f1-notif-bot",
   token: process.env.TOKEN ?? "",
   channel: process.env.CHANNEL ?? "",
+  pracChannel: process.env.PRACTICE ?? "",
   permChannel: process.env.PCHANNEL ?? "",
   role: process.env.ROLE ?? "",
   f2role: process.env.ROLE ?? "",
