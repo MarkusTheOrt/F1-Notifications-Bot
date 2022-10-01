@@ -12,7 +12,7 @@ import { findBestWeekend } from "./Watcher.js";
 export const init = async () => {
   const setting = await Try(Database.Settings.findOne({ name: "infoMessage" }));
   const channel = wrap(
-    Client.channels.cache.get(Config.channel) as TextChannel
+    Client.channels.cache.get(Config.permChannel) as TextChannel
   );
   if (isNone(channel)) {
     throw new Error("Couldn't fetch channel. exiting...");
@@ -24,7 +24,7 @@ export const init = async () => {
 
 export const SendMessage = async () => {
   const channel = wrap(
-    Client.channels.cache.get(Config.channel) as TextChannel
+    Client.channels.cache.get(Config.permChannel) as TextChannel
   );
   if (isNone(channel)) {
     throw new Error("Couldn't find #when-is-f1-on channel.");
@@ -68,7 +68,7 @@ export const GetMessage = async () => {
     console.log("Couldn't find infoMessage Settings Value.");
     return none;
   }
-  const channel = Client.channels.cache.get(Config.channel) as TextChannel;
+  const channel = Client.channels.cache.get(Config.permChannel) as TextChannel;
   if (channel === undefined) {
     console.log("Couldn't find #when-is-f1-on channel.");
     return none;
