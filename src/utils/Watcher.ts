@@ -75,9 +75,7 @@ const Watcher = () => {
         is_practice ? Config.pracChannel : Config.channel
       ) as TextChannel;
       const message = await Try(
-        channel.send(
-          MessageParser(Config.role, unwrap(weekend), found_session.index)
-        )
+        channel.send(MessageParser(unwrap(weekend), found_session.index))
       );
       if (isNone(message)) {
         console.error("Couldn't send Message. Skipping as not to spam.");

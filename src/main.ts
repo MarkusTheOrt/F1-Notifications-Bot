@@ -14,11 +14,11 @@ Client.on("ready", () => {
   Client.channels.fetch(Config.pracChannel, { cache: true });
   // Just a default Presence to make it look nicer.
   Client.user?.setPresence({
-    status: "dnd",
+    status: "online",
     activities: [
       {
-        name: "for a new Session",
-        type: ActivityType.Listening,
+        name: "out for new Sessions",
+        type: ActivityType.Watching,
       },
     ],
   });
