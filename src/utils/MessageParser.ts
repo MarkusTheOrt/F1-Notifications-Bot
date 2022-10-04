@@ -9,11 +9,7 @@ export interface messageContent {
   files: AttachmentBuilder[];
 }
 
-export default (
-  role: string,
-  weekend: Weekend,
-  session: number
-): messageContent => {
+export default (weekend: Weekend, session: number): messageContent => {
   const attachmentId = parseInt(
     "" + Math.random() * Constants.attachments.length
   );
