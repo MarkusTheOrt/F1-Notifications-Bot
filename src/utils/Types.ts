@@ -11,6 +11,7 @@ export interface Message {
   weekend: ObjectId;
   session: number;
   messageId: string;
+  channeldId: string;
   date: string;
 }
 
