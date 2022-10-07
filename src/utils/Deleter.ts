@@ -24,7 +24,7 @@ const Deleter = () => {
 
         const Channel = await Try(
           Client.channels.fetch(
-            unwrap(message).channeldId
+            unwrap(message).channelId
           ) as Promise<TextChannel>
         );
         if (isNone(Channel)) {
