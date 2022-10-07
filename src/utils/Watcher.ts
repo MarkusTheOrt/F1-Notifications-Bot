@@ -107,6 +107,7 @@ const Watcher = () => {
             session: found_session.index,
             date: unwrap(weekend).sessions[found_session.index].start,
             messageId: unwrap(message).id,
+            channeldId: is_practice ? Config.pracChannel : Config.channel,
           })
         );
       }

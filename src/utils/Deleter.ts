@@ -23,9 +23,12 @@ const Deleter = () => {
         }
 
         const Channel = wrap(
-          Client.channels.cache.get(Config.channel) as TextChannel
+          Client.channels.cache.get(unwrap(message).channeldId) as TextChannel
         );
-        if (isNone(Channel)) continue;
+        if (isNone(Channel)) {
+          console.log("Couldn't Fetch channel at deletion.");
+          continue;
+        }
         if (
           isNone(
             await Try(
