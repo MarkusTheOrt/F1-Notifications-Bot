@@ -4,7 +4,7 @@ import Database from "./Database.js";
 import { TextChannel } from "discord.js";
 import { MinDate } from "./DateTool.js";
 import Try from "./Try.js";
-import { isNone, unwrap, wrap } from "./Optional.js";
+import { isNone, unwrap } from "./Optional.js";
 
 const Deleter = () => {
   Client.on("ready", async () => {
@@ -22,8 +22,10 @@ const Deleter = () => {
           continue;
         }
 
-        const Channel = wrap(
-          Client.channels.cache.get(unwrap(message).channeldId) as TextChannel
+        const Channel = await Try(
+          Client.channels.fetch(
+            unwrap(message).channeldId
+          ) as Promise<TextChannel>
         );
         if (isNone(Channel)) {
           console.log("Couldn't Fetch channel at deletion.");
