@@ -81,14 +81,17 @@ export const GetMessage = async () => {
 };
 
 export const UpdateMessage = async (weekend: Weekend) => {
-  let message = await GetMessage();
+  const message = await GetMessage();
+  // if (isNone(message)) {
+  //   message = await SendMessage();
+  //   if (isNone(message)) {
+  //     throw new Error("Couldn't send message.");
+  //   }
+  // }
   if (isNone(message)) {
-    message = await SendMessage();
-    if (isNone(message)) {
-      throw new Error("Couldn't send message.");
-    }
+	console.error("Can't find message.")
+	return;
   }
-
   let content = "";
   for (const session of weekend.sessions) {
     const sessionDate = new MinDate(session.start);
