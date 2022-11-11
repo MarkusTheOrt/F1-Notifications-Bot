@@ -126,7 +126,8 @@ const is_practice_session = (weekend: Weekend, session: number): boolean => {
   if (
     fullSess.type === "FP1" ||
     fullSess.type === "FP2" ||
-    fullSess.type === "FP3"
+    fullSess.type === "FP3" ||
+    fullSess.type === "Quali for Sprint"
   ) {
     return true;
   }
